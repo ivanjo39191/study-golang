@@ -447,8 +447,8 @@ go build
 go build -o greeter
 ./greeter hi hellow hey
 
-# []string{"./unit6", "hi", "hellow", "hey"}
-# Path:  ./unit6
+# []string{"./greeter", "hi", "hellow", "hey"}
+# Path:  ./greeter
 # 1st argument:  hi
 # 2nd argument  hellow
 # 3rd argument  hey
@@ -526,9 +526,6 @@ var pos int // position
 // flag value
 var fv string
 
-// number of bytes read
-var bytesRead int // X
-var n int // O
 ```
 
 ### 在小作用域時使用縮寫命名
