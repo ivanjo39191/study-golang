@@ -38,20 +38,20 @@ import (
 
 func main() {
 	// TYPE YOUR CODE HERE
-	var (
-		l  = len(os.Args) - 1
-		n1 = os.Args[1]
-		n2 = os.Args[2]
-		n3 = os.Args[3]
-		n4 = os.Args[4]
-		n5 = os.Args[5]
-	)
+	// var (
+	// 	l  =
+	// 	n1 = os.Args[1]
+	// 	n2 = os.Args[2]
+	// 	n3 = os.Args[3]
+	// 	n4 = os.Args[4]
+	// 	n5 = os.Args[5]
+	// )
 
-	fmt.Println("There are", l, "people!")
-	fmt.Println("Hello great", n1, "!")
-	fmt.Println("Hello great", n2, "!")
-	fmt.Println("Hello great", n3, "!")
-	fmt.Println("Hello great", n4, "!")
-	fmt.Println("Hello great", n5, "!")
+	fmt.Println("There are", len(os.Args)-1, "people!")
+	fmt.Println("Hello great", os.Args[1], "!")
+	fmt.Println("Hello great", os.Args[2], "!")
+	fmt.Println("Hello great", os.Args[3], "!")
+	fmt.Println("Hello great", os.Args[4], "!")
+	fmt.Println("Hello great", os.Args[5], "!")
 	fmt.Println("Nice to meet you all.")
 }
