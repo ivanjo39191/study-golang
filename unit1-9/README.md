@@ -1,6 +1,6 @@
-# Go Bootcamp: Master Golang with 1000+ Exercises and Projects 筆記
+# Go Bootcamp: Master Golang with 1000+ Exercises and Projects 筆記 1
 
-# 一、環境
+# 環境
 
 ## 下載安裝 go (Linux)
 
