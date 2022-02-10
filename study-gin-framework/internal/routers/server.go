@@ -4,6 +4,7 @@ import (
 	"blog/internal/controller"
 	"blog/internal/services"
 	"io"
+	"net/http"
 	"os"
 
 	"blog/internal/middlewares"
@@ -14,7 +15,7 @@ import (
 
 var (
 	articleService    services.ArticleService      = services.New()
-	ArticleController controller.ArticleController = controller.New(articleService)
+	articleController controller.ArticleController = controller.New(articleService)
 )
 
 func setupLogOutput() {
@@ -32,15 +33,32 @@ func ServerCore() {
 		middlewares.BasicAuth(),
 		gindump.Dump(),
 	)
-	router.GET("/posts", func(c *gin.Context) {
-		c.JSON(200, ArticleController.FindAll())
-	})
-	router.POST("/posts", func(c *gin.Context) {
-		c.JSON(200, ArticleController.Save(c))
-	})
-	router.GET("/test", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "OK!!"})
-	})
+	router.Static("/css", "../../internal/templates/css")
+
+	router.LoadHTMLGlob("../../internal/templates/*.html")
+
+	apiRoutes := router.Group("/api")
+	{
+		apiRoutes.POST("/posts", func(c *gin.Context) {
+			err := articleController.Save(c)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				c.JSON(http.StatusOK, gin.H{"message": "Article Input is valid"})
+			}
+		})
+		apiRoutes.GET("/test", func(c *gin.Context) {
+			c.JSON(200, gin.H{"message": "OK!!"})
+		})
+	}
+
+	viewRoutes := router.Group("/view")
+	{
+		viewRoutes.GET("/posts", func(c *gin.Context) {
+			c.JSON(200, articleController.FindAll())
+		})
+		viewRoutes.GET("/articles", articleController.ShowAll)
+	}
 
 	router.Run(":7528")
 	err := router.Run()
