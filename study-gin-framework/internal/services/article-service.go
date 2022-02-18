@@ -2,26 +2,41 @@ package services
 
 import (
 	"blog/internal/models"
+	"blog/internal/repository"
 )
 
 type ArticleService interface {
-	Save(models.Article) models.Article
+	Save(models.Article) error
+	Update(models.Article) error
+	Delete(models.Article) error
 	FindAll() []models.Article
 }
 
 type articleService struct {
-	articles []models.Article
+	repository repository.ArticleRepository
 }
 
-func New() ArticleService {
-	return &articleService{}
+func New(articleRepository repository.ArticleRepository) ArticleService {
+	return &articleService{
+		repository: articleRepository,
+	}
 }
 
-func (service *articleService) Save(article models.Article) models.Article {
-	service.articles = append(service.articles, article)
-	return article
+func (services *articleService) Save(article models.Article) error {
+	services.repository.Save(article)
+	return nil
 }
 
-func (service *articleService) FindAll() []models.Article {
-	return service.articles
+func (services *articleService) Update(article models.Article) error {
+	services.repository.Update(article)
+	return nil
+}
+
+func (services *articleService) Delete(article models.Article) error {
+	services.repository.Delete(article)
+	return nil
+}
+
+func (services *articleService) FindAll() []models.Article {
+	return services.repository.FindAll()
 }

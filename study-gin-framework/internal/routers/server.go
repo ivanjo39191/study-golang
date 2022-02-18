@@ -2,6 +2,7 @@ package routers
 
 import (
 	"blog/internal/controller"
+	"blog/internal/repository"
 	"blog/internal/services"
 	"io"
 	"net/http"
@@ -14,7 +15,8 @@ import (
 )
 
 var (
-	articleService    services.ArticleService      = services.New()
+	articleRepository repository.ArticleRepository = repository.NewArticleRepository()
+	articleService    services.ArticleService      = services.New(articleRepository)
 	loginService      services.LoginService        = services.NewLoginService()
 	jwtService        services.JWTService          = services.NewJWTService()
 	articleController controller.ArticleController = controller.New(articleService)
@@ -27,6 +29,7 @@ func setupLogOutput() {
 }
 
 func ServerCore() {
+	defer articleRepository.CloseDB()
 
 	setupLogOutput()
 	router := gin.New()
@@ -63,6 +66,31 @@ func ServerCore() {
 		apiRoutes.GET("/test", func(c *gin.Context) {
 			c.JSON(200, gin.H{"message": "OK!!"})
 		})
+
+		apiRoutes.GET("/posts", func(ctx *gin.Context) {
+			ctx.JSON(200, articleController.FindAll())
+		})
+
+		apiRoutes.PUT("/posts/:id", func(ctx *gin.Context) {
+			err := articleController.Update(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Success!"})
+			}
+
+		})
+
+		apiRoutes.DELETE("/posts/:id", func(ctx *gin.Context) {
+			err := articleController.Delete(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Success!"})
+			}
+
+		})
+
 	}
 
 	viewRoutes := router.Group("/view")

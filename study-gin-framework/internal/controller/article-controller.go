@@ -5,6 +5,7 @@ import (
 	"blog/internal/services"
 	"blog/internal/validators"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/go-playground/validator.v9"
@@ -13,6 +14,8 @@ import (
 type ArticleController interface {
 	FindAll() []models.Article
 	Save(ctx *gin.Context) error
+	Update(ctx *gin.Context) error
+	Delete(ctx *gin.Context) error
 	ShowAll(ctx *gin.Context)
 }
 
@@ -45,6 +48,38 @@ func (c *controller) Save(ctx *gin.Context) error {
 		return err
 	}
 	c.services.Save(article)
+	return nil
+}
+
+func (c *controller) Update(ctx *gin.Context) error {
+	var article models.Article
+	err := ctx.ShouldBindJSON(&article)
+	if err != nil {
+		return err
+	}
+
+	id, err := strconv.ParseUint(ctx.Param("id"), 0, 0)
+	if err != nil {
+		return err
+	}
+	article.ID = id
+
+	err = validate.Struct(article)
+	if err != nil {
+		return err
+	}
+	c.services.Update(article)
+	return nil
+}
+
+func (c *controller) Delete(ctx *gin.Context) error {
+	var article models.Article
+	id, err := strconv.ParseUint(ctx.Param("id"), 0, 0)
+	if err != nil {
+		return err
+	}
+	article.ID = id
+	c.services.Delete(article)
 	return nil
 }
 
