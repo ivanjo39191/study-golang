@@ -15,7 +15,10 @@ import (
 
 var (
 	articleService    services.ArticleService      = services.New()
+	loginService      services.LoginService        = services.NewLoginService()
+	jwtService        services.JWTService          = services.NewJWTService()
 	articleController controller.ArticleController = controller.New(articleService)
+	loginController   controller.LoginController   = controller.NewLoginController(loginService, jwtService)
 )
 
 func setupLogOutput() {
@@ -30,14 +33,24 @@ func ServerCore() {
 	router.Use(
 		gin.Recovery(),
 		middlewares.Logger(),
-		middlewares.BasicAuth(),
 		gindump.Dump(),
 	)
 	router.Static("/css", "../../internal/templates/css")
 
 	router.LoadHTMLGlob("../../internal/templates/*.html")
-
-	apiRoutes := router.Group("/api")
+	// Login
+	router.POST("/login", func(ctx *gin.Context) {
+		token := loginController.Login(ctx)
+		if token != "" {
+			ctx.JSON(http.StatusOK, gin.H{
+				"token": token,
+			})
+		} else {
+			ctx.JSON(http.StatusUnauthorized, nil)
+		}
+	})
+	// API
+	apiRoutes := router.Group("/api", middlewares.AuthorizeJWT())
 	{
 		apiRoutes.POST("/posts", func(c *gin.Context) {
 			err := articleController.Save(c)
