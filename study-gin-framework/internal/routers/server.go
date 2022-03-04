@@ -39,7 +39,7 @@ func ServerCore() {
 	docs.SwaggerInfo.Title = "Ivankao Blog - Article API"
 	docs.SwaggerInfo.Description = "Ivankao Blog - Blog Article API."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost"
+	docs.SwaggerInfo.Host = "localhost:7528"
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
